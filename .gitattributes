@@ -1,1 +1,11 @@
-* text=auto
+# Enforce Unix-style line endings for all text files
+* text=auto eol=lf
+
+# Binary files should not have line ending conversions
+*.png binary
+*.jpg binary
+*.gif binary
+*.pyc binary
+
+# Exclude virtual environment
+.venv/ -text
