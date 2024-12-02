@@ -1,30 +1,30 @@
 from pycoingecko import CoinGeckoAPI
 import pandas as pd
 
-def fetch_crypto_prices(coin_id='bitcoin', vs_currency='usd', days=30):
-    """
-    Fetch historical cryptocurrency prices.
+cg = CoinGeckoAPI()
 
-    Args:
-        coin_id (str): Cryptocurrency ID (e.g., 'bitcoin').
-        vs_currency (str): Currency for price comparison (e.g., 'usd').
-        days (int): Number of past days to fetch data for.
+def get_trending_coins():
+    coins = cg.get_search_trending()['coins']
+    trending = pd.DataFrame([
+        {
+            'id': coin['item']['id'],
+            'name': coin['item']['name'],
+            'symbol': coin['item']['symbol'],
+            'market_cap_rank': coin['item']['market_cap_rank']
+        } for coin in coins
+    ])
+    return trending
 
-    Returns:
-        pd.DataFrame: DataFrame with timestamps and prices.
-    """
-    cg = CoinGeckoAPI()
-    data = cg.get_coin_market_chart_by_id(id=coin_id, vs_currency=vs_currency, days=days)
-    prices = pd.DataFrame(data['prices'], columns=['timestamp', 'price'])
-    prices['timestamp'] = pd.to_datetime(prices['timestamp'], unit='ms')
-    return prices
-
-# Test the function
-if __name__ == "__main__":
-    df = fetch_crypto_prices('bitcoin', days=7)
-    print(df.head())
+def get_top_volume_coins():
+    market_data = cg.get_coins_markets(vs_currency='usd', order='volume_desc')
+    volume_data = pd.DataFrame(market_data)
+    return volume_data[['id', 'name', 'symbol', 'total_volume', 'current_price']]
 
 if __name__ == "__main__":
-    df = fetch_crypto_prices('bitcoin', days=7)
-    df.to_csv('../data/bitcoin_prices.csv', index=False)
-    print("Data saved to data/bitcoin_prices.csv")
+    trending_coins = get_trending_coins()
+    print("Trending Coins:")
+    print(trending_coins)
+
+    volume_coins = get_top_volume_coins()
+    print("\nTop Volume Coins:")
+    print(volume_coins)
