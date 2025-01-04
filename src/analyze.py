@@ -57,4 +57,4 @@ if __name__ == "__main__":
     # Display and save the result
     print(tweets_df)
     tweets_df.to_csv("BTC_sentiment.csv", index=False)
-
+# need to check again !! 
